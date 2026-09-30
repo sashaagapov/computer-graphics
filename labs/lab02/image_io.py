@@ -6,6 +6,7 @@ from PIL import Image
 
 
 def open_image(path: Path) -> Image.Image:
+    # Копія дозволяє закрити файл одразу після його читання.
     with Image.open(path) as image:
         loaded_image = image.copy()
         loaded_image.format = image.format
@@ -13,12 +14,11 @@ def open_image(path: Path) -> Image.Image:
 
 
 def save_image(image: Image.Image, path: Path, output_format: str) -> None:
+    # Папка результатів створюється автоматично за потреби.
     path.parent.mkdir(parents=True, exist_ok=True)
     save_kwargs = {}
-
     if output_format.upper() in {"JPEG", "JPG"}:
         save_kwargs["quality"] = 95
-
     image.save(path, format=output_format, **save_kwargs)
 
 
@@ -34,6 +34,7 @@ def build_output_path(
 
 
 def unique_path(path: Path) -> Path:
+    # Нове ім'я не дає результату перезаписати наявний файл.
     if not path.exists():
         return path
 
