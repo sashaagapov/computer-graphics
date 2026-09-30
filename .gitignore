@@ -1,17 +1,28 @@
+# Локальне virtual environment не додаємо в репозиторій.
 .venv/
+
+# Скомпільовані Python-файли та кеші створюються автоматично.
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.ruff_cache/
 .coverage
 
+# OS and IDE files.
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
 
+# Temporary and generated image output.
 output/
 outputs/
 tmp/
 temp/
 converted/
 processed/
+test_photos/
+screenshots/
+report_screenshots/
+*.tmp
 *.log
