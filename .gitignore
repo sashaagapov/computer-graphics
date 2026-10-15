@@ -26,3 +26,6 @@ screenshots/
 report_screenshots/
 *.tmp
 *.log
+
+# Local scripts and intermediate files used to assemble the Lab 4 Word report.
+.docx_lab04_work/
