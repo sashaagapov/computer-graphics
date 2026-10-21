@@ -1,48 +1,25 @@
-# Computer Graphics — Laboratory 4
+# Lab 04 — Brightness and Tone
 
-Image-processing laboratory covering brightness analysis, histograms, grayscale, binarization, and negative images.
+This [Tkinter app](main.py) adds brightness analysis and tonal transformations to the operations from Labs 01–03. The [processing functions](operations.py), [tests](tests/test_operations.py), and [report](report_lab04.docx) are included.
 
-From the repository root, install the shared dependencies:
+![Original tiger photo beside grayscale, binary, and negative results](../../assets/lab04-preview.png)
 
-```bash
-python -m pip install -r requirements.txt
-```
+The tracked preview uses the [tiger input](../../assets/input/tigr-1024x754.jpg) at 320 × 236 pixels. Grayscale, threshold-128 binarization, and negative were produced by the functions in `operations.py`; the image does not show the GUI.
 
-Run the lab from its directory:
+| Feature | Result |
+| --- | --- |
+| Brightness matrix | One integer brightness value per pixel, using `Y = 0.299R + 0.587G + 0.114B`. |
+| Brightness histograms | Counts pixels at each brightness value; the GUI can also show a grayscale histogram. |
+| Grayscale | Saves a monochrome PNG. |
+| Binarization | Saves a black-and-white PNG using the selected threshold. |
+| Negative | Saves an inverted-color PNG. |
+
+The GUI also retains the earlier labs' operations. Its matrix and histograms appear in windows; saved images go to the selected output folder. For steps to capture GUI screenshots for the report, see [SCREENSHOTS.md](SCREENSHOTS.md).
+
+From the repository root, [install the dependencies](../../README.md#run-and-test), then:
 
 ```bash
 cd labs/lab04
 python main.py
 python -m pytest
 ```
-
-On Windows PowerShell, activate the virtual environment with `.venv\Scripts\Activate.ps1` before running these commands.
-
-## Реалізовано
-
-- Transparency with alpha values saved as PNG.
-- Rectangular cropping and area removal.
-- Splitting an image into a requested number of parts.
-- Contrast adjustment using the laboratory formula.
-- Reuse of the laboratory 1 conversion, resize, color replacement, and color-balance operations.
-- Merging two images horizontally or vertically on a white canvas.
-- Adding a text watermark with position, RGB color, font size, and alpha value.
-- A Tkinter slideshow with Start/Stop controls and a non-blocking `after()` timer.
-- Brightness matrix and brightness histogram based on `Y = 0.299R + 0.587G + 0.114B`.
-- Grayscale conversion, binarization with threshold, and negative image.
-
-## Основні функції
-
-- `set_transparency(image, alpha)`
-- `crop_selected_area(image, left, top, right, bottom)`
-- `remove_selected_area(image, left, top, right, bottom)`
-- `split_image(image, parts)`
-- `adjust_contrast(image, factor)`
-- `merge_images(image1, image2, direction)`
-- `add_text_watermark(image, text, position, alpha, font_size, color)`
-- `brightness_value(red, green, blue)`
-- `brightness_matrix(image)`
-- `brightness_histogram(image)`
-- `to_grayscale(image)`
-- `binarize(image, threshold)`
-- `negative(image)`

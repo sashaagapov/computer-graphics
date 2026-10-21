@@ -1,60 +1,36 @@
 # Computer Graphics and Visualization
 
-Навчальні програми для обробки зображень: чотири лабораторні роботи з графічним інтерфейсом на Python і Tkinter. Кожна лабораторна запускається окремо та містить тести операцій обробки зображень.
+Four standalone Python/Tkinter labs for image processing. Each lab has a GUI and tests for its image operations; later labs include the earlier operations.
 
-## Лабораторні роботи
+![Original tiger photo beside grayscale, binary, and negative versions](assets/lab04-preview.png)
 
-| Робота | Основні можливості |
+This Lab 04 example uses the [tiger input image](assets/input/tigr-1024x754.jpg), resized to 320 × 236 pixels. The three results come from `to_grayscale`, `binarize` at threshold 128, and `negative` in [Lab 04's operations](labs/lab04/operations.py). These are processed images, not GUI screenshots.
+
+## Labs
+
+| Lab | What it adds |
 | --- | --- |
-| [Lab 01](labs/lab01/) | Конвертація форматів, зміна розміру, заміна кольору та баланс RGB. |
-| [Lab 02](labs/lab02/) | Прозорість, кадрування, видалення області, розбиття та контраст. |
-| [Lab 03](labs/lab03/) | Об'єднання зображень, текстові водяні знаки та слайдшоу. |
-| [Lab 04](labs/lab04/) | Матриця яскравості, гістограма, градації сірого, бінаризація та негатив. |
+| [01 — Basic image operations](labs/lab01/main.py) | Format conversion, proportional resizing, color replacement, and RGB balance. [Tests](labs/lab01/tests/test_operations.py) and [report](reports/Звіт_ЛР1_КГВ_Агапов.docx). |
+| [02 — Regions and contrast](labs/lab02/README.md) | Transparency, cropping, removing an area, splitting an image, and contrast adjustment. |
+| [03 — Compositing](labs/lab03/README.md) | Horizontal or vertical merging, text watermarks, and a slideshow. |
+| [04 — Brightness and tone](labs/lab04/README.md) | Brightness matrix and histograms, grayscale, threshold binarization, and negative images. The preview above shows three of these results. |
 
-Наступні лабораторні також включають операції попередніх робіт. Деталі є в README відповідних каталогів, крім Lab 01.
+Labs 02–04 have their own README files, tests, and reports. Lab 01 has [source code](labs/lab01/), [tests](labs/lab01/tests/test_operations.py), and the linked report.
 
-## Приклад результатів Lab 04
+## Run and test
 
-![Початкове зображення, градації сірого, бінаризація та негатив](assets/lab04-preview.png)
-
-Приклад створено з [вхідного зображення тигра](assets/input/tigr-1024x754.jpg): його зменшено до 320 × 236 пікселів, після чого застосовано функції `to_grayscale`, `binarize` з порогом 128 і `negative` із [operations.py](labs/lab04/operations.py). Це результати обробки, а не скриншоти інтерфейсу.
-
-## Встановлення
-
-Потрібні Python 3.10 або новіший, Tkinter та залежності з [requirements.txt](requirements.txt). Tkinter входить до багатьох дистрибутивів Python; у деяких системах його потрібно встановити окремо.
-
-Windows PowerShell, з кореня репозиторію:
-
-```powershell
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-macOS / Linux:
+Use Python 3.10 or newer with Tkinter and the packages in [requirements.txt](requirements.txt). From the repository root:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-## Запуск і тести
-
-Запустіть потрібну лабораторну з її каталогу; наприклад:
+Run the chosen lab from its directory, for example:
 
 ```bash
 cd labs/lab04
 python main.py
-```
-
-У вікні програми виберіть вхідні файли та, для операцій зі збереженням, каталог результатів. Приклади вхідних файлів розміщені в [assets/input](assets/input/). Для графічного інтерфейсу потрібне робоче графічне середовище.
-
-Тести запускаються окремо з каталогу кожної лабораторної:
-
-```bash
-cd labs/lab04
 python -m pytest
 ```
 
-Аналогічно використовуйте `labs/lab01`, `labs/lab02` або `labs/lab03`. У [reports](reports/) збережено звіти лабораторних 1–3; звіт лабораторної 4 розташований у [її каталозі](labs/lab04/report_lab04.docx).
+Use the same commands in `labs/lab01`, `labs/lab02`, or `labs/lab03`. The GUI needs a desktop display. Choose an image from [the sample inputs](assets/input/) and an output folder for operations that save files. Processed files are created locally; the preview above is the tracked example.

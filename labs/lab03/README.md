@@ -1,40 +1,19 @@
-# Computer Graphics — Laboratory 3
+# Lab 03 — Merging, Watermarks, and Slideshows
 
-Image-processing laboratory covering image merging, text watermarks, slideshows, and the operations from laboratories 1 and 2.
+This [Tkinter app](main.py) extends [Lab 02](../lab02/README.md) with three features. Its [processing functions](operations.py), [tests](tests/test_operations.py), and [report](../../reports/Звіт_ЛР3_КГВ_Агапов.docx) are included.
 
-From the repository root, install the shared dependencies:
+| Feature | Result |
+| --- | --- |
+| Merge images | Places two images side by side or one above the other on a white canvas. |
+| Text watermark | Places text using the selected position, color, font size, and opacity. |
+| Slideshow | Shows selected images in a Tkinter window with Start/Stop controls. |
 
-```bash
-python -m pip install -r requirements.txt
-```
+The earlier conversion, resizing, color, transparency, region, splitting, and contrast operations remain available. No processed Lab 03 images are tracked; the GUI creates them from [sample inputs](../../assets/input/) in a folder you select.
 
-Run the lab from its directory:
+From the repository root, [install the dependencies](../../README.md#run-and-test), then:
 
 ```bash
 cd labs/lab03
 python main.py
 python -m pytest
 ```
-
-On Windows PowerShell, activate the virtual environment with `.venv\Scripts\Activate.ps1` before running these commands.
-
-## Реалізовано
-
-- Transparency with alpha values saved as PNG.
-- Rectangular cropping and area removal.
-- Splitting an image into a requested number of parts.
-- Contrast adjustment using the laboratory formula.
-- Reuse of the laboratory 1 conversion, resize, color replacement, and color-balance operations.
-- Merging two images horizontally or vertically on a white canvas.
-- Adding a text watermark with position, RGB color, font size, and alpha value.
-- A Tkinter slideshow with Start/Stop controls and a non-blocking `after()` timer.
-
-## Основні функції
-
-- `set_transparency(image, alpha)`
-- `crop_selected_area(image, left, top, right, bottom)`
-- `remove_selected_area(image, left, top, right, bottom)`
-- `split_image(image, parts)`
-- `adjust_contrast(image, factor)`
-- `merge_images(image1, image2, direction)`
-- `add_text_watermark(image, text, position, alpha, font_size, color)`
