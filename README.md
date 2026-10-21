@@ -1,27 +1,29 @@
 # Computer Graphics and Visualization
 
-Python image-processing applications for laboratories 1 and 2 of the Computer Graphics and Visualization course.
+Навчальні програми для обробки зображень: чотири лабораторні роботи з графічним інтерфейсом на Python і Tkinter. Кожна лабораторна запускається окремо та містить тести операцій обробки зображень.
 
-The applications use Tkinter for the GUI, Pillow for image processing, and pytest for tests.
+## Лабораторні роботи
 
-## Structure
+| Робота | Основні можливості |
+| --- | --- |
+| [Lab 01](labs/lab01/) | Конвертація форматів, зміна розміру, заміна кольору та баланс RGB. |
+| [Lab 02](labs/lab02/) | Прозорість, кадрування, видалення області, розбиття та контраст. |
+| [Lab 03](labs/lab03/) | Об'єднання зображень, текстові водяні знаки та слайдшоу. |
+| [Lab 04](labs/lab04/) | Матриця яскравості, гістограма, градації сірого, бінаризація та негатив. |
 
-```text
-labs/lab01/       # format conversion, resizing, and color operations
-labs/lab02/       # transparency, cropping, splitting, and contrast
-assets/input/     # small source images used by the labs
-reports/          # submitted laboratory reports
-```
+Наступні лабораторні також включають операції попередніх робіт. Деталі є в README відповідних каталогів, крім Lab 01.
 
-## Setup
+## Приклад результатів Lab 04
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
+![Початкове зображення, градації сірого, бінаризація та негатив](assets/lab04-preview.png)
 
-Windows PowerShell:
+Приклад створено з [вхідного зображення тигра](assets/input/tigr-1024x754.jpg): його зменшено до 320 × 236 пікселів, після чого застосовано функції `to_grayscale`, `binarize` з порогом 128 і `negative` із [operations.py](labs/lab04/operations.py). Це результати обробки, а не скриншоти інтерфейсу.
+
+## Встановлення
+
+Потрібні Python 3.10 або новіший, Tkinter та залежності з [requirements.txt](requirements.txt). Tkinter входить до багатьох дистрибутивів Python; у деяких системах його потрібно встановити окремо.
+
+Windows PowerShell, з кореня репозиторію:
 
 ```powershell
 py -m venv .venv
@@ -29,24 +31,30 @@ py -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-## Run a lab
+macOS / Linux:
 
 ```bash
-cd labs/lab01
-python main.py
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
 
-cd ../lab02
+## Запуск і тести
+
+Запустіть потрібну лабораторну з її каталогу; наприклад:
+
+```bash
+cd labs/lab04
 python main.py
 ```
 
-The GUI lets you choose input images and an output directory. The shared input images are in `assets/input/`.
+У вікні програми виберіть вхідні файли та, для операцій зі збереженням, каталог результатів. Приклади вхідних файлів розміщені в [assets/input](assets/input/). Для графічного інтерфейсу потрібне робоче графічне середовище.
 
-## Tests
+Тести запускаються окремо з каталогу кожної лабораторної:
 
 ```bash
-cd labs/lab01
-python -m pytest
-
-cd ../lab02
+cd labs/lab04
 python -m pytest
 ```
+
+Аналогічно використовуйте `labs/lab01`, `labs/lab02` або `labs/lab03`. У [reports](reports/) збережено звіти лабораторних 1–3; звіт лабораторної 4 розташований у [її каталозі](labs/lab04/report_lab04.docx).
