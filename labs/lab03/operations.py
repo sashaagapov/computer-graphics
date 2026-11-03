@@ -292,7 +292,9 @@ def add_text_watermark(
     try:
         font = ImageFont.truetype("arial.ttf", font_size)
     except OSError:
-        font = ImageFont.load_default()
+        # The default scalable Pillow font keeps the requested size on systems
+        # where Arial is unavailable (including a standard macOS install).
+        font = ImageFont.load_default(size=font_size)
 
     base = image.convert("RGBA")
     layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
