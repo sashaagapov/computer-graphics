@@ -1,144 +1,121 @@
-# Комп'ютерна графіка — Лабораторна робота №6
+# Lab 06 — Evaluating Image Filtering Quality
 
-**Тема:** Оцінка якості фільтрації зображень за допомогою лінійних та нелінійних фільтрів.
+**Topic:** assessing linear and nonlinear image filters on test images with different kinds of noise.
 
-**Мета:** ознайомитися з методами фільтрації зображень, застосувати лінійні та нелінійні
-фільтри до тестових зображень з різними типами шумів та оцінити якість фільтрації
-математичними показниками.
+**Goal:** generate noisy versions of an image, apply ten filters implemented by hand, and compare them with a numeric quality metric. The code is in [`operations.py`](operations.py) and is covered by [tests](tests/); the [report](report_lab06.docx) is included.
 
-## Ідея роботи
+![Salt-and-pepper noisy tiger next to Mean 3×3, Median 3×3, and Maximum 3×3 results with their metrics](report_assets/comparison_impulse.png)
+
+The figure compares three of the ten filters on `f4` (salt-and-pepper noise, p ≈ 0.08). The median filter removes the isolated black and white pixels and ends up closest to the clean image (`mse_f0` ≈ 292, against ≈ 520 for the mean filter and ≈ 8747 for the maximum filter). The values are reproducible: running [`operations.py`](operations.py) on the tracked [tiger input](../../assets/input/tigr-1024x754.jpg) with the fixed seed gives the same numbers. Titles are partly Ukrainian ("порівняння фільтрів" — filter comparison; "вхід" — input).
+
+## How it works
 
 ```
-чисте зображення (f0)
+clean image (f0)
       ↓
-генеруємо 4 групи шуму (по 2 рівні сили) → f1..f8
+generate 4 noise types at 2 strengths each → f1..f8
       ↓
-застосовуємо 10 фільтрів (3 лінійні + 7 нелінійних) до f0..f8
+apply 10 filters (3 linear + 7 nonlinear) to f0..f8
       ↓
-обчислюємо метрику якості для кожного результату
+compute a quality metric for every result
       ↓
-зводимо все у metrics.csv
+collect everything in metrics.csv
 ```
 
-## Тестові зображення
+## Test images
 
-Програма сама готує 9 зображень 128×128 px у форматі BMP з обраного користувачем файлу:
-приводить його до RGB, змінює розмір на 128×128 і зберігає як `f0.bmp`. З `f0` автоматично
-генеруються `f1.bmp` … `f8.bmp`.
+The app prepares nine 128×128 BMP images from the source image you choose: it converts it to RGB, resizes it to 128×128, and saves it as `f0.bmp`. `f1.bmp` … `f8.bmp` are generated from `f0`.
 
-| Зображення | Тип шуму | Параметр |
+![Grid of the clean image f0 and the eight noisy variants f1 to f8](report_assets/test_images_grid.png)
+
+| Image | Noise type | Parameter |
 | --- | --- | --- |
-| `f0` | без шуму | — |
-| `f1` | адитивний гауссівський (слабший) | σ = 10 |
-| `f2` | адитивний гауссівський (сильніший) | σ = 25 |
-| `f3` | імпульсний (salt-and-pepper, слабший) | p ≈ 0.03 |
-| `f4` | імпульсний (salt-and-pepper, сильніший) | p ≈ 0.08 |
-| `f5` | залежний від яскравості (слабший) | variance = 0.5 × яскравість |
-| `f6` | залежний від яскравості (сильніший) | variance = 2.0 × яскравість |
-| `f7` | залежний від координат (слабший) | σ(x,y) до 15 |
-| `f8` | залежний від координат (сильніший) | σ(x,y) до 35 |
+| `f0` | none | — |
+| `f1` | additive Gaussian (weaker) | σ = 10 |
+| `f2` | additive Gaussian (stronger) | σ = 25 |
+| `f3` | impulse (salt-and-pepper, weaker) | p ≈ 0.03 |
+| `f4` | impulse (salt-and-pepper, stronger) | p ≈ 0.08 |
+| `f5` | brightness-dependent (weaker) | variance = 0.5 × brightness |
+| `f6` | brightness-dependent (stronger) | variance = 2.0 × brightness |
+| `f7` | coordinate-dependent (weaker) | σ(x, y) up to 15 |
+| `f8` | coordinate-dependent (stronger) | σ(x, y) up to 35 |
 
-Значення σ і p вище — прості параметри реалізації (не офіційна вимога методички), обрані
-так, щоб слабший і сильніший варіант кожного типу шуму помітно відрізнялися. Для
-відтворюваності весь шум генерується з фіксованим `random.seed(42)` (див. `RANDOM_SEED`
-у `operations.py`), тому повторний запуск дає однакові f0..f8.
+The σ and p values are simple implementation parameters, not an official requirement of the assignment; they make the weaker and stronger variant of each noise type clearly different. All noise uses a fixed `random.seed(42)` (`RANDOM_SEED` in `operations.py`), so repeated runs produce identical `f0`…`f8`.
 
-Адитивний шум рахується за формулою `I_noisy(x,y) = I(x,y) + N(x,y)`, а всі значення RGB
-після додавання шуму обмежуються діапазоном 0..255.
+Additive noise follows `I_noisy(x, y) = I(x, y) + N(x, y)`, and every RGB value is clamped to 0..255 afterwards.
 
-## Фільтри
+## Filters
 
-| Фільтр | Тип | Вікно |
+| Filter | Type | Window |
 | --- | --- | --- |
-| Mean 3×3 | лінійний | 3×3 |
-| Mean 5×5 | лінійний | 5×5 |
-| Mean 7×7 | лінійний | 7×7 |
-| Median 3×3 | нелінійний | 3×3 |
-| Median 5×5 | нелінійний | 5×5 |
-| Median 7×7 | нелінійний | 7×7 |
-| Minimum 3×3 | нелінійний | 3×3 |
-| Maximum 3×3 | нелінійний | 3×3 |
-| Midpoint 3×3 | нелінійний | 3×3 |
-| Alpha-trimmed mean 3×3 | нелінійний | 3×3 |
+| Mean 3×3 | linear | 3×3 |
+| Mean 5×5 | linear | 5×5 |
+| Mean 7×7 | linear | 7×7 |
+| Median 3×3 | nonlinear | 3×3 |
+| Median 5×5 | nonlinear | 5×5 |
+| Median 7×7 | nonlinear | 7×7 |
+| Minimum 3×3 | nonlinear | 3×3 |
+| Maximum 3×3 | nonlinear | 3×3 |
+| Midpoint 3×3 | nonlinear | 3×3 |
+| Alpha-trimmed mean 3×3 | nonlinear | 3×3 |
 
-Усі фільтри обробляють R, G і B окремо та читають сусідів лише з вихідної копії
-(`source`), записуючи результат в окрему копію (`result`). Відповідно до умови лабораторної,
-межі зображення не обробляються: для вікна N×N піксель обробляється лише тоді, коли навколо
-нього повністю поміщається вікно (margin = N // 2), а крайні пікселі залишаються без змін.
+All filters process R, G, and B separately. They read neighbors only from the original copy (`source`) and write into a separate copy (`result`). As the assignment requires, borders are not processed: for an N×N window a pixel is filtered only when the whole window fits around it (margin = N // 2); edge pixels stay unchanged.
 
-Лінійні фільтри (`mean_filter`) формують новий піксель як лінійну комбінацію (середнє)
-сусідів. Нелінійні фільтри спочатку сортують значення у вікні (`median_filter`,
-`alpha_trimmed_mean_filter`) або беруть `min`/`max` (`minimum_filter`, `maximum_filter`,
-`midpoint_filter`) — така операція не є лінійною комбінацією пікселів.
+Linear filters (`mean_filter`) build a new pixel as a linear combination (the average) of its neighbors. Nonlinear filters either sort the window values (`median_filter`, `alpha_trimmed_mean_filter`) or take `min`/`max` (`minimum_filter`, `maximum_filter`, `midpoint_filter`), which is not a linear combination of pixels.
 
-## Метрика якості
+## Quality metric
 
 ```
 ε² = 1/(N·M) · ΣΣ |g(i,j) - f(i,j)|²
 ```
 
-Для кожного відповідного пікселя різниця між зображеннями підноситься до квадрату, після
-чого рахується середнє по всіх пікселях і каналах (R, G, B окремо). Реалізація —
-`calculate_mse(image_a, image_b)` в `operations.py`. Чим менше значення, тим менша різниця
-між зображеннями.
+For every pair of corresponding pixels the difference is squared, then averaged over all pixels and channels (R, G, B separately). The implementation is `calculate_mse(image_a, image_b)` in `operations.py`; a smaller value means the images are closer.
 
-У `metrics.csv` для кожної пари «зображення + фільтр» рахуються дві колонки:
+`metrics.csv` has two columns for every image-and-filter pair:
 
-- `distortion_vs_input` — **основна метрика методички**: різниця між результатом фільтрації
-  та тим зображенням, яке фільтрувалось (f0 для чистого, fk для зашумленого). Показує,
-  наскільки сильно фільтр змінив вхідне зображення.
-- `mse_vs_clean` — **додаткова метрика**: різниця між результатом фільтрації зашумленого fk
-  та чистим f0. Показує, наскільки фільтр наблизив зашумлене зображення до оригіналу. Вона не
-  замінює основну метрику, а лише доповнює її — пояснення різниці та приклад того, як вони
-  можуть розходитись, наведено у звіті.
+- `distortion_vs_input` is the **metric required by the assignment**: the difference between the filtered result and the image that was filtered (`f0` for the clean image, `fk` for a noisy one). It shows how much the filter changed its input.
+- `mse_vs_clean` is an **additional metric**: the difference between the filtered noisy `fk` and the clean `f0`. It shows how close the filter brought the noisy image back to the original. It complements the main metric rather than replacing it; the report explains the difference and an example where they diverge.
 
-## Запуск
+## More comparisons
 
-З кореня репозиторію встановіть спільні залежності:
+Each figure shows the noisy input and three of the ten filters, with both metrics under every result.
 
-```bash
-python -m pip install -r requirements.txt
-```
+| Noise | Figure |
+| --- | --- |
+| Gaussian, σ = 25 (`f2`): alpha-trimmed mean has the lowest `mse_f0` of the three shown (≈ 342). | ![Gaussian noise f2 and three filter results](report_assets/comparison_gaussian.png) |
+| Brightness-dependent, α = 2.0 (`f6`): median 3×3 has the lowest `mse_f0` of the three shown (≈ 272). | ![Brightness-dependent noise f6 and three filter results](report_assets/comparison_brightness_noise.png) |
+| Coordinate-dependent, max σ = 35 (`f8`): alpha-trimmed mean has the lowest `mse_f0` of the three shown (≈ 302). | ![Coordinate-dependent noise f8 and three filter results](report_assets/comparison_coordinate_noise.png) |
 
-Запустіть лабораторну:
+## Run
+
+From the repository root, [install the dependencies](../../README.md#run-and-test), then:
 
 ```bash
 cd labs/lab06
 python main.py
-```
-
-Для перевірки тестів:
-
-```bash
 python -m pytest
 ```
 
-## Повний аналіз у GUI
+## Full analysis in the GUI
 
-1. Натисніть **Choose images** і виберіть одне вихідне зображення (перше у списку буде
-   використане як джерело для `f0`).
-2. Натисніть **Choose output folder** і виберіть папку для результатів.
-3. У списку **Лабораторна робота** виберіть **ЛР №6 — Оцінка якості фільтрації**.
-4. У списку **Операція** лишається **Аналіз фільтрації ЛР6**.
-5. Натисніть **Run processing**.
+1. Click **Choose images** and pick one source image (the first one in the list becomes `f0`).
+2. Click **Choose output folder** and pick a folder for the results.
+3. In the lab list (**Лабораторна робота**) choose **ЛР №6 — Оцінка якості фільтрації** (the default).
+4. Leave the operation as **Аналіз фільтрації ЛР6** (Lab 6 filtering analysis).
+5. Click **Run processing**.
 
-Програма сама:
+The app then:
 
-1. створює `f0.bmp` … `f8.bmp` у `<output>/lab06_results/test_images/`;
-2. застосовує всі 10 фільтрів до кожного з 9 зображень (90 результатів), зберігаючи їх у
-   підпапках `<output>/lab06_results/<назва_фільтра>/`;
-3. рахує метрики та зберігає `<output>/lab06_results/metrics.csv`;
-4. показує підсумок у полі результатів (кількість тестових зображень, фільтрів, результатів
-   і шлях до `metrics.csv`) та відкриває preview `f0`.
+1. creates `f0.bmp` … `f8.bmp` in `<output>/lab06_results/test_images/`;
+2. applies all 10 filters to each of the 9 images (90 results), saved in `<output>/lab06_results/<filter_name>/`;
+3. computes the metrics and saves `<output>/lab06_results/metrics.csv`;
+4. shows a summary (test images, filters, results, path to `metrics.csv`) and opens a preview of `f0`.
 
-## Основні функції
+## Main functions
 
-- `prepare_base_image`, `add_gaussian_noise`, `add_salt_pepper_noise`,
-  `add_brightness_dependent_noise`, `add_coordinate_dependent_noise`,
-  `generate_test_images` — підготовка f0 та генерація f1..f8.
-- `mean_filter`, `median_filter`, `minimum_filter`, `maximum_filter`, `midpoint_filter`,
-  `alpha_trimmed_mean_filter` — реалізація фільтрів.
-- `calculate_mse` — метрика якості.
-- `run_filter_analysis` — оркестрація повного аналізу (всі 9×10 комбінацій і `metrics.csv`).
+- `prepare_base_image`, `add_gaussian_noise`, `add_salt_pepper_noise`, `add_brightness_dependent_noise`, `add_coordinate_dependent_noise`, `generate_test_images` — prepare `f0` and generate `f1`…`f8`.
+- `mean_filter`, `median_filter`, `minimum_filter`, `maximum_filter`, `midpoint_filter`, `alpha_trimmed_mean_filter` — the filters.
+- `calculate_mse` — the quality metric.
+- `run_filter_analysis` — runs the full analysis (all 9 × 10 combinations and `metrics.csv`).
 
-Усі функції знаходяться в [`operations.py`](operations.py).
+All of them live in [`operations.py`](operations.py).
