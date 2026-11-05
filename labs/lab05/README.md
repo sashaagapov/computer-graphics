@@ -1,51 +1,40 @@
-# Комп'ютерна графіка — Лабораторна робота №5
+# Lab 05 — Smoothing Filter
 
-**Варіант №1 — Згладжувальний фільтр.**
+Variant 1: a hand-written 3×3 smoothing (mean) filter, applied through the same [Tkinter app](main.py) as the earlier labs. The filter is [`smoothing_filter`](operations.py) and is covered by [tests](tests/test_operations.py).
 
-Програма застосовує ручну реалізацію згладжувального фільтра до вибраного зображення.
+![Tiger photo before and after the 3×3 smoothing filter](report_assets/01_source_and_smoothing.png)
 
-## Алгоритм
+The figure is one of the [report illustrations](report_assets/) for this lab: the [tiger sample](../../assets/input/tigr-1024x754.jpg) before and after filtering. Its captions are in Ukrainian ("Вихідне зображення" — source image; "Результат після усереднення RGB" — result after RGB averaging).
 
-- Для кожного внутрішнього пікселя використовується вікно 3×3.
-- У вікні беруться центральний піксель і вісім його сусідів.
-- Окремо обчислюється середнє значення каналів R, G і B.
-- Середні значення записуються у центральний піксель нового зображення.
-- Крайні пікселі не змінюються.
+## Algorithm
 
-Результат має м'якші переходи кольорів, тобто є більш згладженим.
+- Every interior pixel uses a 3×3 window: the pixel itself and its eight neighbors.
+- The R, G, and B channels are averaged separately.
+- The rounded averages become the pixel in a new image; all reads come from the original.
+- Border pixels are left unchanged.
 
-## Запуск
+The result has softer color transitions. To check the effect pixel by pixel, the [8×6 test matrix](../../assets/input/matrix_source_8x6.png) shows each averaged cell:
 
-З кореня репозиторію встановіть спільні залежності:
+![An 8 by 6 color matrix before and after filtering](report_assets/02_matrix_smoothing.png)
 
-```bash
-python -m pip install -r requirements.txt
-```
+Captions: "До фільтрації" — before filtering; "Після фільтрації" — after filtering.
 
-Потім запустіть лабораторну:
+## Run
+
+From the repository root, [install the dependencies](../../README.md#run-and-test), then:
 
 ```bash
 cd labs/lab05
 python main.py
-```
-
-Для перевірки тестів:
-
-```bash
 python -m pytest
 ```
 
-## Перевірка у GUI
+## Try it in the GUI
 
-1. Натисніть **Choose images** і виберіть зображення.
-2. Натисніть **Choose output folder** і виберіть папку для результату.
-3. У списку **Лабораторна робота** виберіть **ЛР №5 — Фільтрація**.
-4. У списку **Операція** виберіть **Згладжувальний фільтр**.
-5. Натисніть **Run processing**.
+1. Click **Choose images** and pick a picture.
+2. Click **Choose output folder**.
+3. In the lab list (**Лабораторна робота**) choose **ЛР №5 — Фільтрація**.
+4. In the operation list (**Операція**) choose **Згладжувальний фільтр** (smoothing filter).
+5. Click **Run processing**.
 
-Для файлу `original.jpg` буде створено `original_smoothing.png`.
-Після обробки вікно з результатом відкривається автоматично.
-
-## Основна функція
-
-`smoothing_filter(image)` у `operations.py`.
+For `original.jpg` the app saves `original_smoothing.png` and opens the result.
