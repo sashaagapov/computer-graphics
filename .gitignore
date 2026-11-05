@@ -29,3 +29,7 @@ report_screenshots/
 
 # Local scripts and intermediate files used to assemble the Lab 4 Word report.
 .docx_lab04_work/
+
+# Generated Lab 6 test images and filtering results (f0..f8, filtered PNGs, metrics.csv).
+labs/lab06/test_images/
+labs/lab06/lab06_results/
