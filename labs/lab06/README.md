@@ -19,7 +19,7 @@ apply 10 filters (3 linear + 7 nonlinear) to f0..f8
       ↓
 compute a quality metric for every result
       ↓
-collect everything in metrics.csv
+create a browser-ready demonstration page and metrics.csv
 ```
 
 ## Test images
@@ -71,7 +71,9 @@ Linear filters (`mean_filter`) build a new pixel as a linear combination (the av
 
 For every pair of corresponding pixels the difference is squared, then averaged over all pixels and channels (R, G, B separately). The implementation is `calculate_mse(image_a, image_b)` in `operations.py`; a smaller value means the images are closer.
 
-`metrics.csv` has two columns for every image-and-filter pair:
+`demonstration.html` is the main file for presenting the result: it shows four representative noise cases, the best filter for each case, and a full metrics table that can be opened in any browser. `metrics.csv` remains the complete machine-readable export.
+
+`metrics.csv` has two metric columns for every image-and-filter pair:
 
 - `distortion_vs_input` is the **metric required by the assignment**: the difference between the filtered result and the image that was filtered (`f0` for the clean image, `fk` for a noisy one). It shows how much the filter changed its input.
 - `mse_vs_clean` is an **additional metric**: the difference between the filtered noisy `fk` and the clean `f0`. It shows how close the filter brought the noisy image back to the original. It complements the main metric rather than replacing it; the report explains the difference and an example where they diverge.
@@ -107,9 +109,19 @@ python -m pytest
 The app then:
 
 1. creates `f0.bmp` … `f8.bmp` in `<output>/lab06_results/test_images/`;
-2. applies all 10 filters to each of the 9 images (90 results), saved in `<output>/lab06_results/<filter_name>/`;
+2. applies all 10 filters to each of the 9 images (90 results), saved in `<output>/lab06_results/all_results/`;
 3. computes the metrics and saves `<output>/lab06_results/metrics.csv`;
-4. shows a summary (test images, filters, results, path to `metrics.csv`) and opens a preview of `f0`.
+4. creates `<output>/lab06_results/demonstration.html` and opens it in the browser.
+
+The generated result folder stays compact:
+
+```text
+lab06_results/
+├── demonstration.html  # presentation page with examples and a readable metrics table
+├── metrics.csv         # full machine-readable export
+├── test_images/        # f0...f8
+└── all_results/        # all 90 filtered images
+```
 
 ## Main functions
 

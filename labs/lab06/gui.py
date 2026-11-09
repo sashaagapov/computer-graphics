@@ -1,3 +1,4 @@
+import webbrowser
 from pathlib import Path
 from tkinter import END, Canvas, Listbox, StringVar, Tk, Toplevel, filedialog, messagebox, scrolledtext, ttk
 
@@ -471,13 +472,13 @@ def run_app() -> None:
                 result_lines.append(f"ПОМИЛКА — {error}")
             else:
                 result_lines.append(
-                    f"Generated: {summary.test_image_count} test images\n"
-                    f"Filters: {summary.filter_count}\n"
-                    f"Filtered results: {summary.filtered_result_count}\n"
-                    f"metrics.csv created: {summary.metrics_path}"
+                    f"Створено тестових зображень: {summary.test_image_count}\n"
+                    f"Фільтрів: {summary.filter_count}\n"
+                    f"Технічних результатів: {summary.filtered_result_count}\n"
+                    f"Сторінка для демонстрації: {summary.demonstration_path}\n"
+                    f"Повні метрики CSV: {summary.metrics_path}"
                 )
-                preview_image = open_image(results_dir / "test_images" / "f0.bmp")
-                show_image_window("f0.bmp — базове тестове зображення 128×128", preview_image)
+                webbrowser.open(summary.demonstration_path.as_uri())
             results.delete("1.0", END)
             results.insert(END, "\n".join(result_lines))
             messagebox.showinfo("Готово", "Аналіз ЛР6 завершено.")
@@ -771,7 +772,7 @@ def run_app() -> None:
             ttk.Label(
                 parameter_content,
                 text="Обере перше зображення зі списку як джерело, створить f0..f8 (128×128, BMP)\n"
-                "і застосує 10 фільтрів у підпапці lab06_results вибраної output-папки.",
+                "і відкриє у браузері demonstration.html з готовими порівняннями та метриками.",
             ).grid(row=0, column=0, sticky="w", pady=4)
 
         elif current_operation == "Slideshow":

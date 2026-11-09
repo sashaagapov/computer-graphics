@@ -253,8 +253,8 @@ def test_run_filter_analysis_creates_all_expected_outputs(tmp_path: Path) -> Non
         with Image.open(bmp_path) as image:
             assert image.size == (128, 128)
 
-    assert (output_dir / "mean_3x3" / "f0_mean_3x3.png").exists()
-    assert (output_dir / "median_3x3" / "f3_median_3x3.png").exists()
+    assert (output_dir / "all_results" / "f0_mean_3x3.png").exists()
+    assert (output_dir / "all_results" / "f3_median_3x3.png").exists()
 
     metrics_path = output_dir / "metrics.csv"
     assert metrics_path.exists()
@@ -262,3 +262,9 @@ def test_run_filter_analysis_creates_all_expected_outputs(tmp_path: Path) -> Non
         rows = list(csv.DictReader(csv_file))
     assert len(rows) == 90
     assert {row["image"] for row in rows} == {f"f{i}" for i in range(9)}
+
+    demonstration_path = output_dir / "demonstration.html"
+    assert demonstration_path.exists()
+    demonstration_html = demonstration_path.read_text(encoding="utf-8")
+    assert "ЛР №6 — оцінка якості фільтрації" in demonstration_html
+    assert "all_results/f2_" in demonstration_html

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from image_io import save_image, write_metrics_csv
+from image_io import save_image, write_demonstration_html, write_metrics_csv
 
 
 SUPPORTED_FORMATS: dict[str, str] = {
@@ -707,6 +707,7 @@ class AnalysisSummary:
     filter_count: int
     filtered_result_count: int
     metrics_path: Path
+    demonstration_path: Path
 
 
 def run_filter_analysis(source_image: Image.Image, output_dir: Path) -> AnalysisSummary:
@@ -719,10 +720,11 @@ def run_filter_analysis(source_image: Image.Image, output_dir: Path) -> Analysis
         save_image(image, test_images_dir / f"{name}.bmp", "BMP")
 
     metrics_rows: list[dict] = []
+    results_dir = output_dir / "all_results"
     for name, (noisy_image, noise_type) in test_images.items():
         for filter_name, filter_type, window_size, slug, filter_function in FILTERS:
             filtered_image = filter_function(noisy_image)
-            save_image(filtered_image, output_dir / slug / f"{name}_{slug}.png", "PNG")
+            save_image(filtered_image, results_dir / f"{name}_{slug}.png", "PNG")
 
             # Основна метрика методички: спотворення поточного (можливо зашумленого) зображення.
             distortion_vs_input = calculate_mse(filtered_image, noisy_image)
@@ -744,9 +746,37 @@ def run_filter_analysis(source_image: Image.Image, output_dir: Path) -> Analysis
     metrics_path = output_dir / "metrics.csv"
     write_metrics_csv(metrics_rows, metrics_path)
 
+    # Для захисту показуємо чотири найнаочніші приклади: сильний варіант кожного шуму.
+    showcase_titles = {
+        "f2": "Гауссівський шум (сильний)",
+        "f4": "Імпульсний шум (сильний)",
+        "f6": "Шум, залежний від яскравості (сильний)",
+        "f8": "Шум, залежний від координат (сильний)",
+    }
+    filter_slugs = {filter_name: slug for filter_name, _, _, slug, _ in FILTERS}
+    examples: list[dict] = []
+    for image_name, title in showcase_titles.items():
+        rows_for_image = [row for row in metrics_rows if row["image"] == image_name]
+        best_row = min(rows_for_image, key=lambda row: row["mse_vs_clean"])
+        result_file = f"{image_name}_{filter_slugs[best_row['filter']]}.png"
+        examples.append(
+            {
+                "title": title,
+                "image": image_name,
+                "filter": best_row["filter"],
+                "mse_vs_clean": best_row["mse_vs_clean"],
+                "input_path": f"test_images/{image_name}.bmp",
+                "result_path": f"all_results/{result_file}",
+            }
+        )
+
+    demonstration_path = output_dir / "demonstration.html"
+    write_demonstration_html(metrics_rows, examples, demonstration_path)
+
     return AnalysisSummary(
         test_image_count=len(test_images),
         filter_count=len(FILTERS),
         filtered_result_count=len(metrics_rows),
         metrics_path=metrics_path,
+        demonstration_path=demonstration_path,
     )
