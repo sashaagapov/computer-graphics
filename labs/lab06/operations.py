@@ -441,12 +441,10 @@ def clamp_channel(value: float) -> int:
 
 
 def prepare_base_image(image: Image.Image, size: int = TEST_IMAGE_SIZE) -> Image.Image:
-    """Приводить довільне зображення до RGB та розміру size×size (f0)."""
     return image.convert("RGB").resize((size, size), Image.Resampling.LANCZOS)
 
 
 def add_gaussian_noise(image: Image.Image, sigma: float, seed: int = RANDOM_SEED) -> Image.Image:
-    """Адитивний гауссівський шум: I_noisy(x,y) = I(x,y) + N(0, sigma^2)."""
     source = image.convert("RGB")
     result = Image.new("RGB", source.size)
     rng = random.Random(seed)
@@ -519,8 +517,6 @@ def add_coordinate_dependent_noise(image: Image.Image, max_sigma: float, seed: i
     return result
 
 
-# Параметри шуму обрано як прості навчальні значення (не вимога методички) і
-# задокументовані тут же, щоб генерація f1..f8 була повністю відтворюваною.
 NOISE_DEFINITIONS: list[tuple[str, str, callable]] = [
     ("f1", "gaussian", lambda image: add_gaussian_noise(image, sigma=10)),
     ("f2", "gaussian", lambda image: add_gaussian_noise(image, sigma=25)),

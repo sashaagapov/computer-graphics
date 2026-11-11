@@ -33,3 +33,4 @@ report_screenshots/
 # Generated Lab 6 test images and filtering results (f0..f8, filtered PNGs, metrics.csv).
 labs/lab06/test_images/
 labs/lab06/lab06_results/
+reports/lab06_results/
